@@ -2,7 +2,7 @@
   "name": "todo-list-api",
   "version": "1.0.0",
   "description": "An API for managing your tasks",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
@@ -24,6 +24,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.8",
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.11",
@@ -31,5 +32,6 @@
   },
   "devDependencies": {
     "tsc-watch": "^7.2.0"
-  }
+  },
+  "type": "module"
 }
