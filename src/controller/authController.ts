@@ -12,7 +12,7 @@ import { createToken } from "../auth/auth.js";
 dotenv.config();
 
 export const signup_get = (_req:Request, res:Response) => {
-    res.send("GET SIGNED USER");
+    res.send("THIS IS THE DUMMY REGISTER PAGE");
 };
 
 export const login_post = async (req:Request, res:Response) => {
@@ -45,7 +45,7 @@ export const login_post = async (req:Request, res:Response) => {
 };
 
 export const login_get = (_req:Request, res:Response) => {
-    res.send("GETTING LOGIN DATA");
+    res.send("THIS IS THE DUMMY LOGIN PAGE");
 }
 
 export const signup_post = async (req:Request, res:Response) => {
@@ -71,6 +71,7 @@ export const signup_post = async (req:Request, res:Response) => {
     return;
 }
 
-export const logout_post = (_req: Request, res:Response) => {
-    res.send("LOGGING OUT!");
+export const logout = (_req: Request, res:Response) => {
+    res.cookie("jwt", "", {maxAge:1});
+    res.redirect("/login");
 }

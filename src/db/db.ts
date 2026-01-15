@@ -42,7 +42,7 @@ export const registerUser = async (name:string, email:string, password:string) =
 //COULD BE REFACTORED!
 export const getUserByEmail = async (email: string) => {
     const [user] = await pool.query<User[]>(`SELECT * FROM users WHERE email = ? LIMIT 1`, [email]);
-    //if (!user[0]) return null;
+    if (!user[0]) return null;
     return user[0];
 };
 
