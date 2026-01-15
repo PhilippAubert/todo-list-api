@@ -1,10 +1,11 @@
-import mysql, { 
-   /*  type FieldPacket, 
-    type QueryResult  */
-}  from "mysql2";
+import mysql, { type ResultSetHeader }  from "mysql2";
 
 import dotenv from "dotenv";
-import type { User, Post} from "../types/types.js";
+
+import type { 
+    User, 
+    Post
+} from "../types/types.js";
 
 dotenv.config();
 
@@ -21,13 +22,9 @@ const pool = mysql.createPool({
     keepAliveInitialDelay: 0,
 }).promise();
 
-const [users] = await pool.query<User[]>("SELECT * FROM users");
-if (users.length !== 0) {
-    console.log(users);
-} else {
-    console.log("NOTHING THERE I THINK");
-}
+const users = await pool.query<User[]>("SELECT * FROM users");
 
+console.log(users);
 
 const [posts] = await pool.query<Post[]>("SELECT * FROM todos");
 if (posts.length !== 0) {
@@ -35,3 +32,9 @@ if (posts.length !== 0) {
 } else {
     console.log("NOTHING POSTED THERE I THINK");
 }
+
+export const registerUser = async (name:string, email:string, password:string) => {
+    const login = await pool.query<ResultSetHeader>(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, [name, email, password]);
+    return login;
+};
+

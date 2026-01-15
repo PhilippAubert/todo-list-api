@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
-    "dev": "tsc-watch --project --rootDir ./src --outDir ./dist --onSuccess \"nodemon ./dist/bin/www.js\"",
+    "dev": "tsc-watch --project tsconfig.json --onSuccess \"nodemon dist/bin/www.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
