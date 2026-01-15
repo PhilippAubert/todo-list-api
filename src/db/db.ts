@@ -34,7 +34,7 @@ if (posts.length !== 0) {
 }
 
 export const registerUser = async (name:string, email:string, password:string) => {
-    const login = await pool.query<ResultSetHeader>(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, [name, email, password]);
+    const [login] = await pool.query<ResultSetHeader>(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, [name, email, password]);
     return login;
 };
 
