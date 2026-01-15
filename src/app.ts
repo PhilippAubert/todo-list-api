@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import loginRoutes from "./routes/loginRoutes.js";
 
 dotenv.config();
 
@@ -10,4 +11,6 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.listen(port, () => console.log(`Server listening on port ${port}!!!`));
+app.use("/", loginRoutes);
+
+app.listen(port, () => console.log(`Server listening on port ${port}`));
