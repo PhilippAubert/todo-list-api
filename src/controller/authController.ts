@@ -5,8 +5,8 @@ import {
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 
-import { registerUser } from "../db/db.js";
-import { validateUser } from "../validation/userValidate.js";
+import { getUserByEmail, registerUser } from "../db/db.js";
+import { validateLogin, validateUser } from "../validation/userValidate.js";
 import { createToken } from "../auth/auth.js";
 
 dotenv.config();
@@ -15,8 +15,33 @@ export const signup_get = (_req:Request, res:Response) => {
     res.send("GET SIGNED USER");
 };
 
-export const login_post = (_req:Request, res:Response) => {
-    res.send("NEW SIGN UP!");
+export const login_post = async (req:Request, res:Response) => {
+    const { email, password } = req.body;
+    
+    const validation = await validateLogin({email, password});
+    if (!validation.valid) {
+        return res.status(400).json({ errors: validation.errors });
+    }
+    try {
+        const user = await getUserByEmail(email);
+        if (user && user.id) {
+            const auth = await bcrypt.compare(password, user?.password);
+            if (auth) {
+                const token = await createToken(user.id);
+                res.cookie("jwt", token, {httpOnly:true, maxAge : (Number(process.env["ACCESS_TOKEN_EXPIRY"]) * 10)});    
+                res.status(201).json({message: "LOGIN SUCCESSFUL", user: user.id});
+                return;
+            }
+            res.status(401).json({message: "you're unauthorized, yo"});
+            return;
+        }
+    } catch (e){
+        if (e instanceof Error){
+            res.status(500).json({error: e});
+            return;
+        }
+    }
+    return;
 };
 
 export const login_get = (_req:Request, res:Response) => {
@@ -35,7 +60,6 @@ export const signup_post = async (req:Request, res:Response) => {
         const hashedPW = await bcrypt.hash(password, 10);
         const newSignup = await registerUser(name, email, hashedPW);
         const token = await createToken(newSignup.insertId);
-        
         res.cookie("jwt", token, {httpOnly:true, maxAge : (Number(process.env["ACCESS_TOKEN_EXPIRY"]) * 10)});
         res.status(201).json({user: newSignup.insertId});
     } catch (err) {

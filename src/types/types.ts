@@ -14,7 +14,7 @@ export interface Post extends RowDataPacket {
 }
 
 export type UserInput = {
-    name: string;
+    name?: string;
     email: string;
     password: string;
 };

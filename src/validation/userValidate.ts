@@ -35,3 +35,26 @@ export const validateUser = async (user: UserInput): Promise<ValidationResult> =
         errors,
     };
 };
+
+
+export const validateLogin = async (user:UserInput): Promise<ValidationResult> =>{
+    const errors: string[] = [];
+
+    if (!user.email || !user.email.trim()) {
+        errors.push("Email is required.");
+    } else if (!/^\S+@\S+\.\S+$/.test(user.email)) {
+        errors.push("Email must be a valid email address.");
+    }
+
+    if (!user.password) {
+        errors.push("Password is required.");
+    } else if (user.password.length < 6) {
+        errors.push("Password must be at least 6 characters.");
+    }
+
+    return {
+        valid: errors.length === 0,
+        errors,
+    };
+}
+
