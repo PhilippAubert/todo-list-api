@@ -2,8 +2,11 @@
   "name": "todo-list-api",
   "version": "1.0.0",
   "description": "An API for managing your tasks",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "tsc-watch --project tsconfig.json --onSuccess \"nodemon dist/bin/www.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +19,26 @@
   "bugs": {
     "url": "https://github.com/PhilippAubert/todo-list-api/issues"
   },
-  "homepage": "https://github.com/PhilippAubert/todo-list-api#readme"
+  "homepage": "https://github.com/PhilippAubert/todo-list-api#readme",
+  "dependencies": {
+    "@types/express": "^5.0.6",
+    "@types/ms": "^2.1.0",
+    "@types/node": "^25.0.8",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.16.0",
+    "nodemon": "^3.1.11",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsc-watch": "^7.2.0"
+  },
+  "type": "module"
 }
