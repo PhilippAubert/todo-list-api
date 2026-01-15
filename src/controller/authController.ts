@@ -21,18 +21,19 @@ export const login_get = (_req:Request, res:Response) => {
 export const signup_post = async (req:Request, res:Response) => {
     const {name, email, password} = req.body;
 
-    const validation = validateUser({ name, email, password });
+    const validation = await validateUser({ name, email, password });
 
     if (!validation.valid) {
         return res.status(400).json({ errors: validation.errors });
     }
-    
     try {
         const newSignup = await registerUser(name, email, password);
         res.status(201).json(newSignup);
     } catch (err) {
-        console.error(err);
-        res.status(400).json("There was an error!");
+        if ((err as any).code === "ER_DUP_ENTRY") {
+            return res.status(400).json({ errors: ["Email is already in use."] });
+        }
+        res.status(500).json({ error: "There was an error registering the user." });
     }
     return;
 }
