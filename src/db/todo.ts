@@ -9,6 +9,7 @@ export const getAllTodos = async (userId:number) => {
         `SELECT * FROM todos WHERE user_id = ?`, 
         [userId]
     );
+    console.log(rows);
     return rows;
 };
 
@@ -25,7 +26,7 @@ export const addTodo = async (title:string,description:string, userId:number) =>
         `INSERT INTO todos (title, description, user_id) VALUES (?, ?, ?)`, 
         [title, description, userId]
     );
-    return result.insertId; 
+    return result.insertId;
 };
 
 export const updateTodo = async (id: number, title:string, description: string, userId: number) => {
