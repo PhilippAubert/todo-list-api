@@ -5,9 +5,9 @@ import {
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 
-import { getUserByEmail, registerUser } from "../db/db.js";
 import { validateLogin, validateUser } from "../validation/userValidate.js";
 import { createToken } from "../auth/auth.js";
+import { getUserByEmail, registerUser } from "../db/user.js";
 
 dotenv.config();
 

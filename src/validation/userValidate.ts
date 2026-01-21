@@ -1,4 +1,4 @@
-import { getUserByEmail, getUserByName } from "../db/db.js";
+import { getUserByEmail, getUserByName } from "../db/user.js";
 import type { UserInput, ValidationResult } from "../types/types.js";
 
 export const validateUser = async (user: UserInput): Promise<ValidationResult> => {

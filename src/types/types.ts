@@ -7,12 +7,6 @@ export interface User extends RowDataPacket {
     password: string
 }
 
-export interface Post extends RowDataPacket {
-    id:Number, 
-    title: string, 
-    description:string
-}
-
 export type UserInput = {
     name?: string;
     email: string;
@@ -22,4 +16,11 @@ export type UserInput = {
 export type ValidationResult = {
     valid: boolean;
     errors: string[];
+};
+
+export interface Todo extends RowDataPacket {
+    id?:Number, 
+    title:string,
+    description: string,
+    user_id: Number
 };
