@@ -18,10 +18,13 @@ export type ValidationResult = {
     errors: string[];
 };
 
-export interface Todo extends RowDataPacket {
-    id:number, 
-    title:string,
+export interface Todo {
+    id: number, 
+    title: string,
     description: string,
+    userId:number,
+    created_at?: Date | null,
+    updated_at?: Date | null
 };
 
 export type MultiQueryResult = [RowDataPacket[], RowDataPacket[], RowDataPacket[]];

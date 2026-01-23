@@ -43,11 +43,14 @@ export const token_refresh = async (req: Request, res: Response) => {
 
     try {
         const userId = await checkRefreshToken(refreshToken);
-        const refreshed = await refreshSession(userId, refreshToken)
+        const refreshed = await refreshSession(userId, refreshToken);
+
         if (!refreshed) {
             throw new AppError("Invalid or expired refresh session", 403);
         }
+
         const { accessToken, refreshToken: newRefreshToken } = await generateUserSession(userId);
+        
         res.header("Authorization", `Bearer ${accessToken}`);
         return res.status(200).json({accessToken, refreshToken: newRefreshToken});
     } catch (e) {
@@ -82,7 +85,6 @@ export const login_post = async (req:Request, res:Response) => {
 
         res.header("Authorization", `Bearer ${accessToken}`);
         return res.status(200).json({message: "Login successful", accessToken, refreshToken});
-        return;
     } catch (e) {
         if (e instanceof AppError) {
             return res.status(e.status).json({ error: e.message });

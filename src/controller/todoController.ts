@@ -14,7 +14,7 @@ import {
 } from "../db/todo.js";
 
 import { validateTodo } from "../validation/todoValidate.js";
-import type { Todo } from "../types/types.js";
+//import type { Todo } from "../types/types.js";
 
 dotenv.config();
 
@@ -73,16 +73,16 @@ export const todo_add = async (req: Request, res: Response):Promise<void> => {
 };
 
 export const todo_update = async (req:Request, res: Response):Promise<void> => {
-    const userId = (req as any).user.id;
-    const {title, description} = req.body;
-    const {id} = req.params;
+    const { title, description } = req.body;
+    const userId = Number((req as any).user.id);
+    const id = Number((req).params["id"]);
 
-    const validationResult = await validateTodo({title, description, userId} as unknown as Todo);
+    const validationResult = await validateTodo({id, title, description, userId});
 
     if (!validationResult.valid) {
         res.status(401).json({errors: validationResult.errors});
         return;
-    }
+    } 
 
     try {
         const updated = await updateTodo(title, description, Number(id), userId);
@@ -90,7 +90,7 @@ export const todo_update = async (req:Request, res: Response):Promise<void> => {
             res.status(403).json({ error: "Forbidden: You are not authorized to update this item." });
             return;
         }
-        res.status(201).json(`Todo ${updated?.id} updated now!`);
+        res.status(201).json(`Todo ${id} updated now!`);
     } catch (e) {
         res.status(500).json({error: e});
     }

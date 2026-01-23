@@ -22,6 +22,7 @@ export const generateUserSession = async (userId: number):Promise<Tokens>=> {
     const refreshToken = jwt.sign({ id: userId }, refreshSecret, { expiresIn: refreshExpirySeconds });
     const expiry = new Date(Date.now() + refreshExpirySeconds * 1000);
     const success = await updateToken(refreshToken, expiry, userId);
+    
     if (!success) {
         throw new AppError("Session creation failed: User not found", 404);
     }
@@ -52,5 +53,3 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
         return next();
     });
 };
-
-

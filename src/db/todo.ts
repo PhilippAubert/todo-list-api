@@ -17,7 +17,7 @@ export const getAllTodos = async (userId: number, limit: number, offset: number)
     return rows;
 };
 
-export const getOneTodo = async (id:number, userId:number): Promise<Todo | null> => {
+export const getOneTodo = async (userId:number, id:number): Promise<Todo | null> => {
     const [rows] = await pool.query<Todo[] & RowDataPacket[]>(
         `SELECT title, description, created_at, updated_at 
          FROM todos WHERE user_id = ? AND id = ?`, 
@@ -34,13 +34,12 @@ export const addTodo = async (title:string,description:string, userId:number): P
     return result.insertId;
 };
 
-export const updateTodo = async (title: string, description: string, id: number, userId: number):Promise<(Todo & RowDataPacket) | null> => {
+export const updateTodo = async (title: string, description: string, id: number, userId: number):Promise<boolean> => {
     const [result] = await pool.query<ResultSetHeader>(
         `UPDATE todos SET title = ?, description = ? WHERE id = ? AND user_id = ?`,
         [title, description, id, userId] 
     );
-    if (result.affectedRows === 0) return null;
-    return await getOneTodo(id, userId);
+    return result.affectedRows > 0;
 }
 
 export const deleteTodo = async (id:number, userId:number): Promise<boolean> => {

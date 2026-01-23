@@ -21,7 +21,8 @@ authRouter.route("/login")
 authRouter.route("/logout")
     .post(logout);
 
-authRouter.route("/refresh").post(token_refresh);
+authRouter.route("/refresh")
+    .post(token_refresh);
 
 
 export default authRouter;
