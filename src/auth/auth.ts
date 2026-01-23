@@ -5,34 +5,52 @@ import {
 } from "express";
 
 import jwt, { type Secret } from "jsonwebtoken";
+import { updateToken } from "../db/user.js";
+import { AppError, type Tokens } from "../types/types.js";
 
-import type { StringValue } from "ms";
+export const generateUserSession = async (userId: number):Promise<Tokens>=> {
+    const accessSecret = process.env["ACCESS_TOKEN_SECRET"] as Secret;
+    const refreshSecret = process.env["REFRESH_TOKEN_SECRET"] as Secret;
+    const expiryStr = process.env["REFRESH_TOKEN_EXPIRY"];
 
-export const createToken = async (id:Number | undefined): Promise<string | undefined> => {
-    if (!id){
-        return "No user found";
+    if (!accessSecret || !refreshSecret || !expiryStr) {
+        throw new AppError("Server configuration missing", 500);
     }
-    const maxAge = process.env["ACCESS_TOKEN_EXPIRY"] as StringValue;
-    if (process.env["ACCESS_TOKEN_SECRET"]) {
-        return jwt.sign({id}, process.env["ACCESS_TOKEN_SECRET"], {expiresIn:maxAge});
+
+    const refreshExpirySeconds = Number(expiryStr);
+    const accessToken = jwt.sign({ id: userId }, accessSecret, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ id: userId }, refreshSecret, { expiresIn: refreshExpirySeconds });
+    const expiry = new Date(Date.now() + refreshExpirySeconds * 1000);
+    const success = await updateToken(refreshToken, expiry, userId);
+    if (!success) {
+        throw new AppError("Session creation failed: User not found", 404);
     }
-    return;
+    
+    return { accessToken, refreshToken };
+};
+
+export const checkRefreshToken = async (refreshToken:string) => {
+    const key = process.env["REFRESH_TOKEN_SECRET"] as Secret;
+    const decoded = jwt.verify(refreshToken, key) as { id: number };
+    return decoded.id;
 }
 
-export const requireAuth = async (req:Request, res:Response, next:NextFunction) => {
-    const token = req.cookies["jwt"];
+export const requireAuth = async (req: Request, res: Response, next: NextFunction):Promise<void | Response<any, Record<string, any>>> => {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "Unauthorized: Token missing" });
+    }
+
     const key = process.env["ACCESS_TOKEN_SECRET"] as Secret;
-    if (token) {
-        jwt.verify(token, key, (err:any , _decoded: any) => {
-            if (err) {
-                console.error(err);
-                res.redirect("/login");
-            } else {
-                next();
-            }
-        })
-    }
-    else {
-        res.redirect("/login");
-    }
-}
+    return jwt.verify(token, key, (err: any, decoded: any) => {
+        if (err) {
+            return res.status(401).json({ error: "Unauthorized: Invalid token" });
+        }
+        (req as any).user = { id: decoded.id };  
+        return next();
+    });
+};
+
+

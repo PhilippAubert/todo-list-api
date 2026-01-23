@@ -1,4 +1,4 @@
-import type { ResultSetHeader } from "mysql2";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import { pool } from "./db.js";
 
@@ -21,4 +21,26 @@ export const getUserByName = async (name: string): Promise<User | null> => {
     const [user] = await pool.query<User[]>(`SELECT * FROM users WHERE name = ? LIMIT 1`, [name]);
     if (!user[0]) return null;
     return user[0];
+};
+
+export const getUserById = async (id:number):Promise<User | null> => {
+    const [user] = await pool.query<User[]>(`SELECT * FROM users WHERE id = ? LIMIT 1`, [id]);
+    if (!user[0]) return null;
+    return user[0];
+}
+
+export const updateToken = async (refreshToken: string | null, expiry: Date | null, userId: number): Promise<boolean> => {
+    const [result] = await pool.query<ResultSetHeader>(
+        "UPDATE users SET refresh_token = ?, refresh_token_expires_at = ? WHERE id = ?",
+        [refreshToken, expiry, userId]
+    );
+    return result.affectedRows > 0;
+};
+
+export const refreshSession = async (userId: number, token: string): Promise<boolean> => {
+    const [rows] = await pool.query<RowDataPacket[]>(
+        `SELECT id FROM users WHERE id = ? AND refresh_token = ? AND refresh_token_expires_at > NOW()`,
+        [userId, token]
+    );
+    return rows.length > 0;
 };

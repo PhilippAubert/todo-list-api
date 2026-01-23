@@ -1,7 +1,7 @@
 import type { RowDataPacket } from "mysql2";
 
 export interface User extends RowDataPacket {
-    id?: Number, 
+    id: number, 
     name: string,
     email:string,
     password: string
@@ -19,8 +19,22 @@ export type ValidationResult = {
 };
 
 export interface Todo extends RowDataPacket {
-    id?:Number, 
+    id:number, 
     title:string,
     description: string,
-    user_id: Number
+};
+
+export type MultiQueryResult = [RowDataPacket[], RowDataPacket[], RowDataPacket[]];
+
+export class AppError extends Error {
+    constructor(public override message: string, public status: number) {
+        super(message);
+        this.name = "AppError";
+        Object.setPrototypeOf(this, AppError.prototype);
+    }
+};
+
+export type Tokens = {
+    accessToken: string, 
+    refreshToken: string
 };
