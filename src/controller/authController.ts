@@ -39,10 +39,6 @@ export const login_post = async (req:Request, res:Response) => {
             res.status(201).json({message: "LOGIN SUCCESSFUL", user: user.id});
             return;
         }
-        if (user && user.id) {
-          /*   res.status(401).json({message: "you're unauthorized, yo"});
-            return; */
-        }
     } catch (e){
         if (e instanceof Error){
             res.status(500).json({error: e});
