@@ -4,7 +4,7 @@ import { pool } from "./db.js"
 import type { Todo } from "../types/types.js";
 
 
-export const getAllTodos = async (userId:number) => {
+export const getAllTodos = async (userId:number): Promise<Todo[]|null> => {
     const [rows] = await pool.query<Todo[] & RowDataPacket[]>(
         `SELECT * FROM todos WHERE user_id = ?`, 
         [userId]
@@ -13,7 +13,7 @@ export const getAllTodos = async (userId:number) => {
     return rows;
 };
 
-export const getOneTodo = async (id:number, userId:number) => {
+export const getOneTodo = async (id:number, userId:number): Promise<Todo | null> => {
     const [rows] = await pool.query<Todo[] & RowDataPacket[]>(
         `SELECT * FROM todos WHERE user_id = ? AND id = ?`, 
         [userId, id]
@@ -21,7 +21,7 @@ export const getOneTodo = async (id:number, userId:number) => {
     return rows[0] || null;
 };
 
-export const addTodo = async (title:string,description:string, userId:number) => {
+export const addTodo = async (title:string,description:string, userId:number): Promise<number> => {
     const [result] = await pool.query<ResultSetHeader>(
         `INSERT INTO todos (title, description, user_id) VALUES (?, ?, ?)`, 
         [title, description, userId]
@@ -29,7 +29,7 @@ export const addTodo = async (title:string,description:string, userId:number) =>
     return result.insertId;
 };
 
-export const updateTodo = async (id: number, title:string, description: string, userId: number) => {
+export const updateTodo = async (id: number, title: string, description: string, userId: number):Promise<(Todo & RowDataPacket) | null> => {
     const [result] = await pool.query<ResultSetHeader>(
         `UPDATE todos SET title = ?, description = ? WHERE id = ? AND user_id = ?`,
         [title, description, id, userId] 
@@ -39,7 +39,7 @@ export const updateTodo = async (id: number, title:string, description: string, 
     return await getOneTodo(id, userId);
 }
 
-export const deleteTodo = async (id:number, userId:number) => {
+export const deleteTodo = async (id:number, userId:number): Promise<boolean> => {
     const [result] = await pool.query<ResultSetHeader>(
         `DELETE FROM todos WHERE id = ? AND user_id = ?`, 
         [id, userId]

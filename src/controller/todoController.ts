@@ -5,7 +5,7 @@ import {
 
 import dotenv from "dotenv";
 
-import { addTodo, getAllTodos } from "../db/todo.js";
+import { addTodo, deleteTodo, getAllTodos, updateTodo } from "../db/todo.js";
 
 dotenv.config();
 
@@ -23,10 +23,33 @@ export const todo_add = async (req: Request, res: Response):Promise<void> => {
     const {title, description, user_id} = req.body;
 
     try {
-        const newPost = await addTodo(title, description, user_id);
-        console.log(newPost);
-        res.status(201).json("new todo added");
+        const newTodo = await addTodo(title, description, user_id);
+        res.status(201).json(`${newTodo} has been added!`);
     } catch (e) {
         res.status(500).json({error:e});
     }
 };
+
+export const todo_update = async (req:Request, res: Response):Promise<void> => {
+    const {title, description, user_id} = req.body;
+    const {id} = req.params;
+    try {
+        const todoToUpdate = await updateTodo(title, description, user_id, Number(id));
+        res.status(201).json(`Todo ${todoToUpdate?.id} updated now!`);
+    } catch (e) {
+        res.status(500).json({error: e});
+    }
+
+}
+
+
+export const todo_delete = async (req:Request, res:Response):Promise<void> => {
+    const {id} = req.params;
+    const {user_id} = req.body;
+    try {
+        const todoToDelete = await deleteTodo(Number(id), user_id);
+        res.status(201).json(`todo ${id} deleted: ${todoToDelete}`);
+    } catch (e) {
+        res.status(500).json({error: e});
+    }
+}
