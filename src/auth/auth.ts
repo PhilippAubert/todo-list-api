@@ -29,7 +29,7 @@ export const generateUserSession = async (userId: number):Promise<Tokens>=> {
     return { accessToken, refreshToken };
 };
 
-export const checkRefreshToken = async (refreshToken:string) => {
+export const checkRefreshToken = async (refreshToken:string):Promise<number> => {
     const key = process.env["REFRESH_TOKEN_SECRET"] as Secret;
     const decoded = jwt.verify(refreshToken, key) as { id: number };
     return decoded.id;

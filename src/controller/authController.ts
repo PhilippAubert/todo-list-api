@@ -49,10 +49,7 @@ export const token_refresh = async (req: Request, res: Response) => {
         }
         const { accessToken, refreshToken: newRefreshToken } = await generateUserSession(userId);
         res.header("Authorization", `Bearer ${accessToken}`);
-        return res.status(200).json({
-            accessToken,
-            refreshToken: newRefreshToken
-        });
+        return res.status(200).json({accessToken, refreshToken: newRefreshToken});
     } catch (e) {
         if (e instanceof AppError) {
             return res.status(e.status).json({ error: e.message });
@@ -84,11 +81,7 @@ export const login_post = async (req:Request, res:Response) => {
         const { accessToken, refreshToken } = await generateUserSession(user.id);
 
         res.header("Authorization", `Bearer ${accessToken}`);
-        return res.status(200).json({
-            message: "Login successful",
-            accessToken,
-            refreshToken
-        });
+        return res.status(200).json({message: "Login successful", accessToken, refreshToken});
         return;
     } catch (e) {
         if (e instanceof AppError) {
@@ -117,21 +110,16 @@ export const signup_post = async (req:Request, res:Response) => {
         const { accessToken, refreshToken } = await generateUserSession(newSignup.insertId);
 
         res.header("Authorization", `Bearer ${accessToken}`);
-        return res.status(200).json({
-            message: "Login successful",
-            accessToken,
-            refreshToken
-        });
+        return res.status(200).json({message: "Login successful", accessToken, refreshToken});
     } catch (err) {
         if ((err as any).code === "ER_DUP_ENTRY") {
             return res.status(400).json({ errors: ["Email is already in use."] });
         }
-        res.status(500).json({ error: "There was an error registering the user." });
+        return res.status(500).json({ error: "There was an error registering the user." });
     }
-    return;
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const logout = async (req: Request, res: Response):Promise<Response> => {
     try {
         const userId = (req as any).user.id;
         await updateToken(null, null, userId);
@@ -139,7 +127,6 @@ export const logout = async (req: Request, res: Response) => {
             message: "Logged out successfully. Session invalidated." 
         });
     } catch (e) {
-        res.status(500).json({ error: "Logout failed" });
+        return res.status(500).json({ error: "Logout failed" });
     }
-    return;
 };
