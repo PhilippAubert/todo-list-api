@@ -9,7 +9,6 @@ export const getAllTodos = async (userId:number): Promise<Todo[]|null> => {
         `SELECT * FROM todos WHERE user_id = ?`, 
         [userId]
     );
-    console.log(rows);
     return rows;
 };
 
@@ -29,12 +28,11 @@ export const addTodo = async (title:string,description:string, userId:number): P
     return result.insertId;
 };
 
-export const updateTodo = async (id: number, title: string, description: string, userId: number):Promise<(Todo & RowDataPacket) | null> => {
+export const updateTodo = async (title: string, description: string, id: number, userId: number):Promise<(Todo & RowDataPacket) | null> => {
     const [result] = await pool.query<ResultSetHeader>(
         `UPDATE todos SET title = ?, description = ? WHERE id = ? AND user_id = ?`,
         [title, description, id, userId] 
     );
-    
     if (result.affectedRows === 0) return null;
     return await getOneTodo(id, userId);
 }
