@@ -34,9 +34,16 @@ export const login_post = async (req:Request, res:Response) => {
         }
         const auth = await bcrypt.compare(password, user?.password);
         if (auth) {
+
             const token = await createToken(user?.id);
-            res.cookie("jwt", token, {httpOnly:true, maxAge : (Number(process.env["ACCESS_TOKEN_EXPIRY"]) * 10)});    
-            res.status(201).json({message: "LOGIN SUCCESSFUL", user: user.id});
+
+            if (token) {
+                res.header("Authorization", `Bearer ${token}`);
+                return res.status(200).json({
+                    message: "Login successful",
+                    token: token
+                });
+            }
             return;
         }
     } catch (e){
@@ -64,8 +71,10 @@ export const signup_post = async (req:Request, res:Response) => {
             return;
         }
         const token = await createToken(newSignup?.insertId);
-        res.cookie("jwt", token, {httpOnly:true, maxAge : (Number(process.env["ACCESS_TOKEN_EXPIRY"]) * 10)});
-        res.status(201).json({user: newSignup?.insertId});
+        if (token) {
+            res.header("Authorization", `Bearer ${token}`);
+            res.status(201).json({user: newSignup?.insertId});
+        }
     } catch (err) {
         if ((err as any).code === "ER_DUP_ENTRY") {
             return res.status(400).json({ errors: ["Email is already in use."] });
@@ -76,6 +85,8 @@ export const signup_post = async (req:Request, res:Response) => {
 };
 
 export const logout = (_req: Request, res:Response) => {
-    res.cookie("jwt", "", {maxAge:1});
-    res.redirect("/login");
+    res.removeHeader("Authorization");
+    return res.status(200).json({ 
+        message: "Logged out successfully" 
+    });
 };

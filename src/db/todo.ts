@@ -1,9 +1,8 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { pool } from "./db.js"
 
-import type { Todo } from "../types/types.js";
+import type { MultiQueryResult, Todo } from "../types/types.js";
 
-type MultiQueryResult = [RowDataPacket[], RowDataPacket[], RowDataPacket[]];
 
 export const getAllTodos = async (userId: number, limit: number, offset: number): Promise<MultiQueryResult> => {
     const [rows] = await pool.query<MultiQueryResult>(

@@ -24,3 +24,5 @@ export interface Todo extends RowDataPacket {
     description: string,
     user_id: number
 };
+
+export type MultiQueryResult = [RowDataPacket[], RowDataPacket[], RowDataPacket[]];

@@ -5,7 +5,6 @@ import {
 } from "express";
 
 import jwt, { type Secret } from "jsonwebtoken";
-
 import type { StringValue } from "ms";
 
 export const createToken = async (id:Number | undefined): Promise<string | undefined> => {
@@ -19,20 +18,21 @@ export const createToken = async (id:Number | undefined): Promise<string | undef
     return;
 }
 
-export const requireAuth = async (req:Request, res:Response, next:NextFunction) => {
-    const token = req.cookies["jwt"];
+export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "Unauthorized: Token missing" });
+    }
+
     const key = process.env["ACCESS_TOKEN_SECRET"] as Secret;
-    if (token) {
-        jwt.verify(token, key, (err:any , _decoded: any) => {
-            if (err) {
-                console.error(err);
-                res.status(403).redirect("/login");
-            } else {
-                next();
-            }
-        })
-    }
-    else {
-        res.status(403).redirect("/login");
-    }
-}
+
+    return jwt.verify(token, key, (err: any, decoded: any) => {
+        if (err) {
+            return res.status(401).json({ error: "Unauthorized: Invalid token" });
+        }
+        (req as any).user = { id: decoded.id }; 
+        return next();
+    });
+};
