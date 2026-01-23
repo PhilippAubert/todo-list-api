@@ -7,12 +7,17 @@ import {
     signup_post 
 } from "../controller/authController.js";
 
-const router = express.Router();
+const loginRouter = express.Router();
 
-router.get("/register", signup_get);
-router.post("/register", signup_post);
-router.get("/login", login_get);
-router.post("/login", login_post);
-router.get("/logout", logout);
+loginRouter.route("/register")
+    .get(signup_get)
+    .post(signup_post);
 
-export default router;
+loginRouter.route("/login")
+    .get(login_get)
+    .post(login_post);
+
+loginRouter.route("/logout")
+    .get(logout);
+
+export default loginRouter;
