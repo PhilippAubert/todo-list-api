@@ -1,7 +1,7 @@
 import type { RowDataPacket } from "mysql2";
 
 export interface User extends RowDataPacket {
-    id?: Number, 
+    id?: number, 
     name: string,
     email:string,
     password: string
@@ -19,8 +19,8 @@ export type ValidationResult = {
 };
 
 export interface Todo extends RowDataPacket {
-    id?:Number, 
+    id?:number, 
     title:string,
     description: string,
-    user_id: Number
+    user_id: number
 };

@@ -22,3 +22,9 @@ export const getUserByName = async (name: string): Promise<User | null> => {
     if (!user[0]) return null;
     return user[0];
 };
+
+export const getUserById = async (id:number):Promise<User | null> => {
+    const [user] = await pool.query<User[]>(`SELECT * FROM users WHERE id = ? LIMIT 1`, [id]);
+    if (!user[0]) return null;
+    return user[0];
+}

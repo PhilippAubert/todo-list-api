@@ -26,13 +26,13 @@ export const requireAuth = async (req:Request, res:Response, next:NextFunction) 
         jwt.verify(token, key, (err:any , _decoded: any) => {
             if (err) {
                 console.error(err);
-                res.redirect("/login");
+                res.status(403).redirect("/login");
             } else {
                 next();
             }
         })
     }
     else {
-        res.redirect("/login");
+        res.status(403).redirect("/login");
     }
 }

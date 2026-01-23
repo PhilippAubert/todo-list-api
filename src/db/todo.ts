@@ -3,11 +3,14 @@ import { pool } from "./db.js"
 
 import type { Todo } from "../types/types.js";
 
+type MultiQueryResult = [RowDataPacket[], RowDataPacket[], RowDataPacket[]];
 
-export const getAllTodos = async (userId:number): Promise<Todo[]|null> => {
-    const [rows] = await pool.query<Todo[] & RowDataPacket[]>(
-        `SELECT * FROM todos WHERE user_id = ?`, 
-        [userId]
+export const getAllTodos = async (userId: number, limit: number, offset: number): Promise<MultiQueryResult> => {
+    const [rows] = await pool.query<MultiQueryResult>(
+        `SELECT * FROM todos WHERE user_id = ? LIMIT ? OFFSET ?;
+         SELECT COUNT(*) AS total FROM todos WHERE user_id = ?;
+         SELECT COUNT(*) AS all_items FROM todos;`,
+        [userId, limit, offset, userId]
     );
     return rows;
 };
