@@ -59,6 +59,7 @@ export const todo_add = async (req: Request, res: Response):Promise<void> => {
     const { title, description } = req.body;
 
     const validationResult = await validateTodo({ title, description, user_id: userId } as any);
+    
     if (!validationResult.valid) {
         res.status(400).json({ errors: validationResult.errors });
         return;
